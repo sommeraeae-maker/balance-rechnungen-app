@@ -1,0 +1,46 @@
+# Hält die Streamlit-App wach.
+# Streamlit legt kostenlose Apps nach etwa 7 Tagen ohne Nutzung schlafen
+# und löscht sie irgendwann ganz. Dieser Ablauf ruft die App wöchentlich auf,
+# damit sie immer als "in Benutzung" gilt.
+#
+# Läuft kostenlos auf GitHub – dein Mac muss dafür nicht an sein.
+
+name: App wach halten
+
+on:
+  schedule:
+    # Jeden Montag um 06:00 UTC (Sommerzeit: 08:00 deutscher Zeit)
+    - cron: "0 6 * * 1"
+  # Erlaubt zusätzlich das Starten von Hand über den Reiter "Actions"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  wecken:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Projekt auschecken
+        uses: actions/checkout@v4
+
+      - name: App aufrufen
+        run: |
+          APP_URL="https://balance-rechnungen-antp2cwhsltizhmqijd6xr.streamlit.app"
+          echo "Rufe auf: $APP_URL"
+          # Zweimal aufrufen: Der erste Aufruf weckt eine schlafende App,
+          # der zweite bestätigt, dass sie wirklich antwortet.
+          curl -sSL --max-time 180 -o /dev/null -w "Antwort 1: %{http_code}\n" "$APP_URL" || true
+          sleep 45
+          curl -sSL --max-time 180 -o /dev/null -w "Antwort 2: %{http_code}\n" "$APP_URL" || true
+
+      - name: Lebenszeichen ins Repo schreiben
+        # Nötig, weil GitHub geplante Abläufe nach 60 Tagen ohne Aktivität
+        # im Repo abschaltet. Dieser winzige Eintrag verhindert das.
+        run: |
+          date -u +"%Y-%m-%d %H:%M:%S UTC" > .letzter-weckruf
+          git config user.name "Wecker"
+          git config user.email "actions@github.com"
+          git add .letzter-weckruf
+          git commit -m "Wecker: App wach gehalten" || exit 0
+          git push

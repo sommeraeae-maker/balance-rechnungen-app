@@ -1,0 +1,19 @@
+# Alles Persönliche und Geschäftliche bleibt draußen –
+# das liegt im privaten Repo balance-rechnungen.
+firma.json
+Rechnungstemplate/
+Fertige Rechnungen/
+Fertige_Rechnungen/
+Kunden/
+counter.json
+
+# Zugangsdaten
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# macOS
+.DS_Store
