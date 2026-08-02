@@ -26,7 +26,7 @@ jobs:
 
       - name: App aufrufen
         run: |
-          APP_URL="https://balance-rechnungen-antp2cwhsltizhmqijd6xr.streamlit.app"
+          APP_URL="https://balance-rechnungen.streamlit.app"
           echo "Rufe auf: $APP_URL"
           # Zweimal aufrufen: Der erste Aufruf weckt eine schlafende App,
           # der zweite bestätigt, dass sie wirklich antwortet.
